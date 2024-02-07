@@ -63,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::controller(Back_InfaqMasjidController::class)->group(function () {
-            Route::get('/infaq', 'infaq')->name('InformasiInfaq.HalamanInfaq');
+            Route::get('/infaq', 'infaq')->name('InformasiInfaq.HalamanInfaq.Infaq');
             Route::post('/tambah-infaq-masjid', 'tambah_infaq_masjid')->name('ProsesTambahInfaqMasjid');
             Route::any('/data-infaq-masjid', 'data_infaq_masjid')->name('DataInfaqMasjid');
             Route::get('/tampil-data-infaq-masjid/{infaq_id}', 'tampil_data_infaq_masjid');
@@ -73,6 +73,8 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/rincian-infaq-masjid/{kode}', 'rincian_data_infaq_masjid')->name('InformasiInfaq.HalamanInfaq.HalamanRincianInfaq');
             Route::post('/tambah-rincian-infaq-masjid', 'tambah_rincian_data_infaq_masjid')->name('ProsesTambahRincianMasjid');
+            Route::get('/tampil-data-rincian-infaq-masjid/{rincian_infaq_id}', 'tampil_data_rincian_infaq_masjid');
+            Route::post('/proses-ubah-rincian-infaq-masjid', 'proses_ubah_rincian_infaq_masjid')->name('ProsesUbahRincianMasjid');
         });
     });
 });

@@ -87,7 +87,7 @@
                     "class": "text-wrap text-center",
                     "render": function(data, type, row, meta) {
                         daftar_data_infaq_masjid[row.id] = row;
-                        return row.tanggal;
+                        return moment(row.tanggal).format('DD-MMMM-YYYY');
                     }
                 },
                 {

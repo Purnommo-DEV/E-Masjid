@@ -87,11 +87,11 @@ class Back_InfaqMasjidController extends Controller
         return $referal_code;
     }
 
-    public function tampil_data_infaq_masjid($infaq_id)
+    public function tampirincian_l_data_infaq_masjid($infaq_id)
     {
-        $data_infaq_masjid = Infaq::where('id', $infaq_id)->first();
+        $data_rincian_infaq_masjid = Infaq::where('id', $infaq_id)->first();
         return response()->json([
-            'data' => $data_infaq_masjid
+            'data' => $data_rincian_infaq_masjid
         ]);
     }
 
@@ -244,5 +244,38 @@ class Back_InfaqMasjidController extends Controller
                 ]);
             }
         }
+    }
+
+    public function tampil_data_rincian_infaq_masjid($rincian_infaq_id)
+    {
+        $data_rincian_infaq_masjid = InfaqRincian::with('relasi_pecahan', 'relasi_sub_kategori', 'relasi_infaq.relasi_kategori')->where('id', $rincian_infaq_id)->first();
+        return response()->json([
+            'data' => $data_rincian_infaq_masjid
+        ]);
+    }
+
+    public function proses_ubah_rincian_infaq_masjid(Request $request)
+    {
+        $data_rincian_infaq_masjid = InfaqRincian::with('relasi_pecahan')->where('id', $request->req_rincian_infaq_masjid_id)->first();
+        $data_rincian_infaq_masjid->update([
+            'jumlah' => $request->req_jumlah,
+            'subtotal' =>  $data_rincian_infaq_masjid->relasi_pecahan->pecahan * $request->req_jumlah
+        ]);
+
+        $total_rincian_infaq = InfaqRincian::with('relasi_pecahan')->where('infaq_id', $data_rincian_infaq_masjid->infaq_id)->get();
+        $total = 0;
+        foreach ($total_rincian_infaq as $hitung_total_rincian_infaq) {
+            $total += $hitung_total_rincian_infaq->jumlah * $hitung_total_rincian_infaq->relasi_pecahan->pecahan;
+        }
+
+        $data_infaq = Infaq::where('id', $data_rincian_infaq_masjid->infaq_id)->first();
+        $data_infaq->update([
+            'jumlah' => $total
+        ]);
+
+        return response()->json([
+            'status_berhasil' => 1,
+            'msg' => 'Berhasil Mengubah Data'
+        ]);
     }
 }

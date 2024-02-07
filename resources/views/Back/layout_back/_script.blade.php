@@ -11,6 +11,7 @@
 <script src="{{ asset('All/js/mask/jquery.mask.min.js') }}"></script>
 <script type="text/javascript"
     src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 
 {{-- <script src="{{ asset('Back/js/plugins/chartjs.min.js') }}"></script> --}}
 {{-- <script>

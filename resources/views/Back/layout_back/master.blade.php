@@ -3,7 +3,7 @@
 
 @include('Back.layout_back._head')
 
-<body class="g-sidenav-show  bg-gray-200">
+<body class="g-sidenav-show bg-gray-200">
 
     @include('Back.layout_back._sidebar')
 

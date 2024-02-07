@@ -184,8 +184,9 @@
                                                 <p class="text-xs mb-0">{{ help_format_rupiah($item_1->subtotal) }}</p>
                                             </td>
                                             <td class="align-middle text-center text-sm">
-                                                <span class="badge badge-sm bg-gradient-success">Ubah</span>
-                                                <span class="badge badge-sm bg-gradient-danger">Hapus</span>
+                                                <button
+                                                    class="btn btn-sm bg-gradient-success btn-ubah-data-rincian-infaq-masjid"
+                                                    data-id="{{ $item_1->id }}">Ubah</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -206,9 +207,96 @@
                     @endif
                 </div>
                 @include('Back.Infaq.data_infaq.rincian_data_infaq._form_rincian_tambah_data_infaq')
-                {{-- @include('Back.Infaq.data_infaq._form_ubah_data_infaq') --}}
+                @include('Back.Infaq.data_infaq.rincian_data_infaq._form_rincian_ubah_data_infaq')
             </div>
         </div>
     </div>
 </div>
 @endsection
+@push('script')
+<script>
+    $('body').on('click', '.btn-ubah-kategori', function(e) {
+        e.preventDefault();
+        let kategori_id = $(this).data('id');
+        $.ajax({
+            url: `/admin/tampil-data-kategori/${kategori_id}`,
+            type: "GET",
+            cache: false,
+            success: function(response) {
+                $('#kategori_id').val(response.data.id);
+                $('#ubah_kategori').val(response.data.kategori);
+                $("#modal-ubah-kategori").modal('show')
+            }
+        });
+    });
+
+    $('#form-ubah-kategori').on('submit', function(e) {
+        e.preventDefault();
+        var $search = $("#icon-button-ubah-kategori")
+        $("#icon-button-ubah-kategori").addClass("fa fa-spinner fa-spin")
+        $("#text-ubah-kategori").html('')
+        $("#button-ubah-kategori").prop('disabled', true);
+
+        var data = new FormData(this);
+        data.append('kategori_id', $('#kategori_id').val());
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: "{{ route('admin.ProsesUbahKategori') }}",
+            method: "POST",
+            data: data,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            beforeSend: function() {
+                $(document).find('label.error-text').text('');
+            },
+            success: function(data) {
+                if (data.status_form_kosong == 1) {
+                    $.each(data.error, function(prefix, val) {
+                        $('label.' + prefix + '_error').text(val[0]);
+                        // $('span.'+prefix+'_error').text(val[0]);
+                    });
+                    $search.removeClass("fa fa-spinner fa-spin")
+                    $("#text-ubah-kategori").html(
+                        '<span id="text-ubah-kategori" class="d-sm-block">Simpan</span>'
+                    )
+                    $("#button-ubah-kategori").prop('disabled', false);
+                } else if (data.status_berhasil == 1) {
+                    $("#form-ubah-kategori").trigger('reset');
+                    $("#modal-ubah-kategori").modal('hide')
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal
+                                .stopTimer)
+                            toast.addEventListener('mouseleave', Swal
+                                .resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.msg
+                    })
+                    $search.removeClass("fa fa-spinner fa-spin")
+                    $("#text-ubah-kategori").html(
+                        '<span id="text-ubah-kategori" class="d-sm-block">Simpan</span>'
+                    )
+                    $("#button-ubah-kategori").prop('disabled', false);
+                    $(document).find('label.error-text').text('');
+                    $("#daftar-kategori").load(location.href +
+                        " #daftar-kategori>*", "");
+                }
+            },
+        });
+    });
+</script>
+@endpush
